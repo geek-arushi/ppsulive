@@ -1,4 +1,5 @@
-import { useState } from "react"
+import { useState } from "react";
+import axios from "axios";
 
 export default function HomePageForm({ onSubmit }) {
   const [formData, setFormData] = useState({
@@ -7,12 +8,35 @@ export default function HomePageForm({ onSubmit }) {
     phone: "",
     state: "",
     course: "",
-  })
+  });
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    onSubmit(formData)
-  }
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axios.post(
+        "https://script.google.com/macros/s/AKfycbxUyd5eGQ8NnCtzZQH0gU_zp-hQTkTWo8pRVMhq7pbyUuN3i-OLP2s5RvOUiVDkEBbO/exec",
+        formData
+      );
+      console.log("Response:", response.data);
+      alert("Form submitted successfully!");
+
+      // Optional: clear the form
+      setFormData({
+        name: "",
+        email: "",
+        phone: "",
+        state: "",
+        course: "",
+      });
+
+      if (onSubmit) {
+        onSubmit(formData);
+      }
+    } catch (error) {
+      console.error("Submission error:", error);
+      alert("There was an error submitting the form. Please try again.");
+    }
+  };
 
   const states = [
     "Andhra Pradesh",
@@ -43,7 +67,7 @@ export default function HomePageForm({ onSubmit }) {
     "Uttar Pradesh",
     "Uttarakhand",
     "West Bengal",
-  ]
+  ];
 
   const courses = [
     "B.Tech",
@@ -62,7 +86,7 @@ export default function HomePageForm({ onSubmit }) {
     "MCA",
     "LLB",
     "LLM",
-  ]
+  ];
 
   return (
     <form onSubmit={handleSubmit}>
@@ -130,5 +154,5 @@ export default function HomePageForm({ onSubmit }) {
         Submit Application
       </button>
     </form>
-  )
+  );
 }

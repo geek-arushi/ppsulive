@@ -1,21 +1,56 @@
 import { useState } from "react";
 
-export default function ApplicationForm({ onSubmit, isSubmitting }) {
+export default function ApplicationForm() {
   const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
+    name: "",
     email: "",
     phone: "",
     address: "",
     state: "",
     course: "",
-    previousEducation: "",
-    message: "",
   });
 
-  const handleSubmit = (e) => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [message, setMessage] = useState("");
+
+  const API_URL =
+    "https://script.google.com/macros/s/AKfycbw36FCINln2r2hpXw3MX1kBMOcI07iI6Nx7MuG9FhgloXDKozePfAnYXG07BKrqnrOFhQ/exec";
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onSubmit(formData);
+    setIsSubmitting(true);
+    setMessage("");
+
+    try {
+      const response = await fetch(API_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const result = await response.json();
+
+      if (result.status === "success") {
+        setMessage("Application submitted successfully!");
+        setFormData({
+          name: "",
+          email: "",
+          phone: "",
+          address: "",
+          state: "",
+          course: "",
+        });
+      } else {
+        setMessage("Something went wrong. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error submitting form:", error);
+      setMessage("Error submitting form. Try again later.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const states = [
@@ -72,34 +107,18 @@ export default function ApplicationForm({ onSubmit, isSubmitting }) {
 
   return (
     <form onSubmit={handleSubmit}>
-      <div className="row g-3">
-        <div className="col-md-6">
-          <label className="form-label fw-medium">First Name*</label>
-          <input
-            type="text"
-            className="form-control"
-            value={formData.firstName}
-            onChange={(e) =>
-              setFormData({ ...formData, firstName: e.target.value })
-            }
-            required
-          />
-        </div>
-        <div className="col-md-6">
-          <label className="form-label fw-medium">Last Name*</label>
-          <input
-            type="text"
-            className="form-control"
-            value={formData.lastName}
-            onChange={(e) =>
-              setFormData({ ...formData, lastName: e.target.value })
-            }
-            required
-          />
-        </div>
+      <div className="mb-3">
+        <label className="form-label fw-medium">Name*</label>
+        <input
+          type="text"
+          className="form-control"
+          value={formData.name}
+          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+          required
+        />
       </div>
 
-      <div className="row g-3 mt-2">
+      <div className="row g-3">
         <div className="col-md-6">
           <label className="form-label fw-medium">Email Address*</label>
           <input
@@ -178,31 +197,6 @@ export default function ApplicationForm({ onSubmit, isSubmitting }) {
         </div>
       </div>
 
-      <div className="mt-3">
-        <label className="form-label fw-medium">Previous Education*</label>
-        <input
-          type="text"
-          className="form-control"
-          value={formData.previousEducation}
-          onChange={(e) =>
-            setFormData({ ...formData, previousEducation: e.target.value })
-          }
-          required
-        />
-      </div>
-
-      <div className="mt-3">
-        <label className="form-label fw-medium">Additional Message</label>
-        <textarea
-          className="form-control"
-          rows="3"
-          value={formData.message}
-          onChange={(e) =>
-            setFormData({ ...formData, message: e.target.value })
-          }
-        ></textarea>
-      </div>
-
       <div className="mt-4 d-grid">
         <button
           type="submit"
@@ -223,6 +217,12 @@ export default function ApplicationForm({ onSubmit, isSubmitting }) {
           )}
         </button>
       </div>
+
+      {message && (
+        <div className="alert alert-info mt-3 text-center" role="alert">
+          {message}
+        </div>
+      )}
     </form>
   );
 }
