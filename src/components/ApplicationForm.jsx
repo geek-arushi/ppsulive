@@ -14,7 +14,7 @@ export default function ApplicationForm() {
   const [message, setMessage] = useState("");
 
   const API_URL =
-    "https://script.google.com/macros/s/AKfycbzH7G9cnI-LJYOJ3d_wLggkD3E9XZ8w5C9XfPSJi616W59pNlHSI9DqQDtg393tRwDY/exec";
+    "https://script.google.com/macros/s/AKfycbzWuNu2fkKZ8Zj-s00hBDtlw3vE1x7mc9mKvezWL_tiE93hRX5Jji-zc0rlpyzMVH8D/exec";
 
   const handleSubmit = async (e) => {
     e.preventDefault();
